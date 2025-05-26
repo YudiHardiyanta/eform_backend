@@ -14,7 +14,10 @@ export async function login(req, res) {
         const user = await prisma.user.findUnique({
             where: {
                 email: username
-            }
+            },
+            include: {
+                userRoles: true,
+            },
         })
         if (!user) {
             return res.status(401).json({ code: 401, message: 'Email atau Password salah' });
@@ -23,10 +26,11 @@ export async function login(req, res) {
         if (!isMatch) {
             return res.status(401).json({ code: 401, message: 'Email atau Password salah' });
         }
+
         const token = jwt.sign({
             id: user.id,
             username: user.email,
-            //role: user.role,
+            role: user.userRoles,
             nama: user.nama
         }, SECRET_KEY, { expiresIn: '1d' });
 
