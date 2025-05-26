@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  admin
+  pengawas
+  pencacah
+}
+
+enum Status {
+  draft
+  submit
+  reject
+  approve
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  nama      String
+  email     String     @unique
+  password  String
+  userRoles UserRole[]
+}
+
+model Kegiatan {
+  id          Int        @id @default(autoincrement())
+  nama        String
+  deskripsi   String
+  tgl_mulai   DateTime
+  tgl_selesai DateTime
+  userRoles   UserRole[]
+}
+
+model UserRole {
+  id          Int       @id @default(autoincrement())
+  user_email  String
+  role        Role      @default(pencacah)
+  kegiatan_id Int
+  User        User?     @relation(fields: [user_email], references: [email])
+  Kegiatan    Kegiatan? @relation(fields: [kegiatan_id], references: [id])
+}
+
+model SampelKegiatan {
+  id              Int              @id @default(autoincrement())
+  prov            String
+  kab             String?
+  kec             String?
+  desa            String?
+  sls             String?
+  subsls          String?
+  bs              String?
+  wilayah_id      String
+  kegiatan_id     String
+  predifined_data String?
+  pencacah_email  String?
+  pengawas_email  String?
+  status          Status           @default(draft)
+  answerKegiatan  AnswerKegiatan[]
+}
+
+model AnswerKegiatan {
+  id                 Int             @id @default(autoincrement())
+  answer             String?
+  sample_kegiatan_id Int
+  is_aktif           Boolean         @default(true)
+  SampelKegiatan     SampelKegiatan? @relation(fields: [sample_kegiatan_id], references: [id])
+}
