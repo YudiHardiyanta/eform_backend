@@ -5,6 +5,65 @@ dotenv.config();  // Memuat variabel lingkungan dari file .env
 
 const prisma = new PrismaClient();
 
+export async function saveById(req, res) {
+    try {
+        const id_sampel = req.body.id
+        const status = req.body.status
+        const data = req.body.data
+        const sampel = await prisma.sampelKegiatan.findUnique({
+            where: {
+                id: parseInt(id_sampel)
+            },
+            include: {
+                MDesa: true
+            }
+        })
+        if (!sampel) {
+            return res.status(401).json({ code: 401, message: 'Anda tidak memiliki akses untuk pendataan ini' });
+        }
+        if (sampel.pencacah_email != req.user.username) {
+            return res.status(401).json({ code: 401, message: 'Anda tidak memiliki akses untuk pendataan ini' });
+        }
+
+        const updated_sampel = await prisma.sampelKegiatan.update({
+            where: {
+                id: parseInt(id_sampel)
+            },
+            data: {
+                status: status
+            }
+        });
+
+        const updateAnswer = await prisma.answerKegiatan.updateMany({
+            where: {
+                sample_kegiatan_id: parseInt(id_sampel)
+            },
+            data: {
+                is_aktif: false
+            }
+        });
+
+        const addNewAnswer = await prisma.answerKegiatan.create({
+            data : {
+                sample_kegiatan_id : parseInt(id_sampel),
+                answer : data,
+                is_aktif : true
+            }
+        })
+
+        return res.status(200).json({
+            code: 200,
+            message: `Data ${sampel.MDesa.nama} sudah ${updated_sampel.status}`
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            code: 500, message: error.message
+        })
+    }
+
+}
+
 export async function updateStatusById(req, res) {
     try {
         const id_sampel = req.body.id
@@ -18,7 +77,6 @@ export async function updateStatusById(req, res) {
             }
         })
         if (!sampel) {
-            console.log('sampel tidak ketemu')
             return res.status(401).json({ code: 401, message: 'Anda tidak memiliki akses untuk pendataan ini' });
         }
         if (sampel.pengawas_email != req.user.username) {
@@ -34,10 +92,9 @@ export async function updateStatusById(req, res) {
         });
         return res.status(200).json({
             code: 200,
-            message : `Data ${sampel.MDesa.nama} sudah ${updated_sampel.status}`
+            message: `Data ${sampel.MDesa.nama} sudah ${updated_sampel.status}`
         })
     } catch (error) {
-        console.log(error)
         return res.status(500).json({
             code: 500, message: error.message
         })
@@ -48,7 +105,6 @@ export async function updateStatusById(req, res) {
 export async function getDataById(req, res) {
     try {
         const id_sampel = req.query.id
-        console.log(id_sampel)
         // get data sampel
         const sampel = await prisma.sampelKegiatan.findUnique({
             where: {
@@ -59,7 +115,11 @@ export async function getDataById(req, res) {
                 MKab: true,
                 MKec: true,
                 MDesa: true,
-                answerKegiatan: true
+                answerKegiatan: {
+                    where : {
+                        is_aktif : true
+                    }
+                }
             }
 
         })
@@ -67,7 +127,6 @@ export async function getDataById(req, res) {
 
         // cek user role
         const roleId = req.user.role.find(r => r.kegiatan_id == id_kegiatan);
-        console.log(roleId)
         if (!roleId) {
             res.status(401).json({ code: 401, message: 'Anda tidak memiliki akses untuk pendataan ini' });
         }
