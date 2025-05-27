@@ -6,7 +6,12 @@ dotenv.config();  // Memuat variabel lingkungan dari file .env
 const prisma = new PrismaClient();
 
 export async function getKegiatan(req, res) {
-    const { username } = req.body;
+    const  username  = req.user.username;
+    if(!username){
+        return res.status(401).json({
+            code: 401, message: 'silakan login kembali'
+        })
+    }
     try {
         //mendapatkan role ke user
         const kegiatan = await prisma.userRole.findMany({

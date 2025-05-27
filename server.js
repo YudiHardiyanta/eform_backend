@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import verifyToken from './middleware/authMiddleware.js';
 import userRoutes from './routes/userRoutes.js';
 import kegiatanRoutes from './routes/kegiatanRoutes.js';
+import sampelRoutes from './routes/sampelRoutes.js';
 dotenv.config();  // Memuat variabel lingkungan dari file .env
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(cors());  // Mengaktifkan CORS
 
 app.use('/user',userRoutes);
 app.use('/kegiatan',kegiatanRoutes);
+app.use('/sampel',sampelRoutes)
 
 // Dummy users untuk login (gunakan database sebenarnya untuk produksi)
 const users = [

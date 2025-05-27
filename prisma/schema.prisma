@@ -26,12 +26,69 @@ enum Status {
   approve
 }
 
+model MProv {
+  id             Int              @id @default(autoincrement())
+  kode           String           @unique
+  nama           String
+  Kab            MKab[]
+  MKec           MKec[]
+  MDesa          MDesa[]
+  SampelKegiatan SampelKegiatan[]
+
+  @@map("m_prov")
+}
+
+model MKab {
+  id             Int              @id @default(autoincrement())
+  kode           String           @unique
+  nama           String
+  kode_prov      String
+  MProv          MProv?           @relation(fields: [kode_prov], references: [kode])
+  MKec           MKec[]
+  MDesa          MDesa[]
+  SampelKegiatan SampelKegiatan[]
+
+  @@map("m_kab")
+}
+
+model MKec {
+  id             Int              @id @default(autoincrement())
+  kode           String           @unique
+  nama           String
+  kode_prov      String
+  kode_kab       String
+  MProv          MProv?           @relation(fields: [kode_prov], references: [kode])
+  MKab           MKab?            @relation(fields: [kode_kab], references: [kode])
+  MDesa          MDesa[]
+  SampelKegiatan SampelKegiatan[]
+
+  @@map("m_kec")
+}
+
+model MDesa {
+  id             Int              @id @default(autoincrement())
+  kode           String           @unique
+  nama           String
+  kode_prov      String
+  kode_kab       String
+  kode_kec       String
+  SampelKegiatan SampelKegiatan[]
+
+  MProv MProv? @relation(fields: [kode_prov], references: [kode])
+  MKab  MKab?  @relation(fields: [kode_kab], references: [kode])
+  MKec  MKec?  @relation(fields: [kode_kec], references: [kode])
+
+  @@map("m_desa")
+}
+
 model User {
   id        Int        @id @default(autoincrement())
   nama      String
   email     String     @unique
   password  String
   userRoles UserRole[]
+
+  @@map("tb_users")
 }
 
 model Kegiatan {
@@ -41,6 +98,8 @@ model Kegiatan {
   tgl_mulai   DateTime
   tgl_selesai DateTime
   userRoles   UserRole[]
+
+  @@map("tb_kegiatan")
 }
 
 model UserRole {
@@ -50,6 +109,8 @@ model UserRole {
   kegiatan_id Int
   User        User?     @relation(fields: [user_email], references: [email])
   Kegiatan    Kegiatan? @relation(fields: [kegiatan_id], references: [id])
+
+  @@map("tb_user_role")
 }
 
 model SampelKegiatan {
@@ -63,17 +124,25 @@ model SampelKegiatan {
   bs              String?
   wilayah_id      String
   kegiatan_id     String
-  predifined_data String?
+  predifined_data Json?
   pencacah_email  String?
   pengawas_email  String?
   status          Status           @default(draft)
   answerKegiatan  AnswerKegiatan[]
+  MProv           MProv?           @relation(fields: [prov], references: [kode])
+  MKab            MKab?            @relation(fields: [kab], references: [kode])
+  MKec            MKec?            @relation(fields: [kec], references: [kode])
+  MDesa           MDesa?           @relation(fields: [desa], references: [kode])
+
+  @@map("tb_sampel_kegiatan")
 }
 
 model AnswerKegiatan {
   id                 Int             @id @default(autoincrement())
-  answer             String?
+  answer             Json?
   sample_kegiatan_id Int
   is_aktif           Boolean         @default(true)
   SampelKegiatan     SampelKegiatan? @relation(fields: [sample_kegiatan_id], references: [id])
+
+  @@map("tb_answer")
 }

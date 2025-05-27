@@ -4,6 +4,6 @@ import verifyToken from '../middleware/authMiddleware.js';
 
 const kegiatanRoutes = express.Router();
 
-kegiatanRoutes.post('/',verifyToken,getKegiatan)
+kegiatanRoutes.get('/',verifyToken,getKegiatan)
 
 export default kegiatanRoutes
