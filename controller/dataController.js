@@ -10,6 +10,7 @@ export async function saveById(req, res) {
         const id_sampel = req.body.id
         const status = req.body.status
         const data = req.body.data
+        const catatan = req.body.catatan
         const sampel = await prisma.sampelKegiatan.findUnique({
             where: {
                 id: parseInt(id_sampel)
@@ -30,7 +31,8 @@ export async function saveById(req, res) {
                 id: parseInt(id_sampel)
             },
             data: {
-                status: status
+                status: status,
+                catatan : catatan
             }
         });
 
@@ -68,6 +70,7 @@ export async function updateStatusById(req, res) {
     try {
         const id_sampel = req.body.id
         const status = req.body.status
+        const catatan = req.body.catatan
         const sampel = await prisma.sampelKegiatan.findUnique({
             where: {
                 id: parseInt(id_sampel)
@@ -87,9 +90,14 @@ export async function updateStatusById(req, res) {
                 id: parseInt(id_sampel)
             },
             data: {
-                status: status
+                status: status,
+                catatan : catatan
             }
         });
+
+        
+
+
         return res.status(200).json({
             code: 200,
             message: `Data ${sampel.MDesa.nama} sudah ${updated_sampel.status}`
@@ -111,10 +119,30 @@ export async function getDataById(req, res) {
                 id: parseInt(id_sampel)
             },
             include: {
-                MProv: true,
-                MKab: true,
-                MKec: true,
-                MDesa: true,
+                MProv: {
+                    select : {
+                        kode : true,
+                        nama : true
+                    }
+                },
+                MKab: {
+                    select : {
+                        kode : true,
+                        nama : true
+                    }
+                },
+                MKec: {
+                    select : {
+                        kode : true,
+                        nama : true
+                    }
+                },
+                MDesa: {
+                    select : {
+                        kode : true,
+                        nama : true
+                    }
+                },
                 answerKegiatan: {
                     where : {
                         is_aktif : true

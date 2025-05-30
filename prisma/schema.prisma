@@ -128,6 +128,7 @@ model SampelKegiatan {
   pencacah_email  String?
   pengawas_email  String?
   status          Status           @default(draft)
+  catatan         String?          @db.Text
   answerKegiatan  AnswerKegiatan[]
   MProv           MProv?           @relation(fields: [prov], references: [kode])
   MKab            MKab?            @relation(fields: [kab], references: [kode])
@@ -145,4 +146,15 @@ model AnswerKegiatan {
   SampelKegiatan     SampelKegiatan? @relation(fields: [sample_kegiatan_id], references: [id])
 
   @@map("tb_answer")
+}
+
+model Notification {
+  id          Int     @id @default(autoincrement())
+  from        String
+  to          String
+  message     String
+  kegiatan_id Int
+  is_open     Boolean @default(false)
+
+  @@map("tb_notif")
 }
