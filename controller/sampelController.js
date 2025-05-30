@@ -8,8 +8,7 @@ const prisma = new PrismaClient();
 export async function getSampel(req, res) {
     try {
         const roleId = req.user.role.find(r => r.kegiatan_id == req.query.id);
-        console.log(roleId)
-        console.log(req.user.role)
+        
         if (!roleId) {
             res.status(401).json({ code: 401, message: 'Anda tidak memiliki akses untuk pendataan ini' });
         }
