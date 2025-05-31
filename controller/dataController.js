@@ -32,7 +32,7 @@ export async function saveById(req, res) {
             },
             data: {
                 status: status,
-                catatan : catatan
+                catatan: catatan
             }
         });
 
@@ -46,10 +46,10 @@ export async function saveById(req, res) {
         });
 
         const addNewAnswer = await prisma.answerKegiatan.create({
-            data : {
-                sample_kegiatan_id : parseInt(id_sampel),
-                answer : data,
-                is_aktif : true
+            data: {
+                sample_kegiatan_id: parseInt(id_sampel),
+                answer: data,
+                is_aktif: true
             }
         })
 
@@ -71,6 +71,7 @@ export async function updateStatusById(req, res) {
         const id_sampel = req.body.id
         const status = req.body.status
         const catatan = req.body.catatan
+        const data = req.body.data
         const sampel = await prisma.sampelKegiatan.findUnique({
             where: {
                 id: parseInt(id_sampel)
@@ -91,12 +92,28 @@ export async function updateStatusById(req, res) {
             },
             data: {
                 status: status,
-                catatan : catatan
+                catatan: catatan
             }
         });
 
-        
+        if (data) {
+            const updateAnswer = await prisma.answerKegiatan.updateMany({
+                where: {
+                    sample_kegiatan_id: parseInt(id_sampel)
+                },
+                data: {
+                    is_aktif: false
+                }
+            });
 
+            const addNewAnswer = await prisma.answerKegiatan.create({
+                data: {
+                    sample_kegiatan_id: parseInt(id_sampel),
+                    answer: data,
+                    is_aktif: true
+                }
+            })
+        }
 
         return res.status(200).json({
             code: 200,
@@ -120,32 +137,32 @@ export async function getDataById(req, res) {
             },
             include: {
                 MProv: {
-                    select : {
-                        kode : true,
-                        nama : true
+                    select: {
+                        kode: true,
+                        nama: true
                     }
                 },
                 MKab: {
-                    select : {
-                        kode : true,
-                        nama : true
+                    select: {
+                        kode: true,
+                        nama: true
                     }
                 },
                 MKec: {
-                    select : {
-                        kode : true,
-                        nama : true
+                    select: {
+                        kode: true,
+                        nama: true
                     }
                 },
                 MDesa: {
-                    select : {
-                        kode : true,
-                        nama : true
+                    select: {
+                        kode: true,
+                        nama: true
                     }
                 },
                 answerKegiatan: {
-                    where : {
-                        is_aktif : true
+                    where: {
+                        is_aktif: true
                     }
                 }
             }
