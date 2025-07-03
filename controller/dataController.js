@@ -160,6 +160,12 @@ export async function getDataById(req, res) {
                         nama: true
                     }
                 },
+                MSLS: {
+                    select : {
+                        kode : true,
+                        nama : true,
+                    }
+                },
                 answerKegiatan: {
                     where: {
                         is_aktif: true

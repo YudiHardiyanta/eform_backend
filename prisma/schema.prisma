@@ -20,6 +20,7 @@ enum Role {
 }
 
 enum Status {
+  open
   draft
   submit
   reject
@@ -135,6 +136,8 @@ model Kegiatan {
   table_var        Json?
   tgl_mulai        DateTime
   tgl_selesai      DateTime
+  path             String?
+  color            String?
   userRoles        UserRole[]
 
   @@map("tb_kegiatan")
@@ -165,7 +168,7 @@ model SampelKegiatan {
   predifined_data Json?
   pencacah_email  String?
   pengawas_email  String?
-  status          Status           @default(draft)
+  status          Status           @default(open)
   catatan         String?          @db.Text
   answerKegiatan  AnswerKegiatan[]
   MProv           MProv?           @relation(fields: [prov], references: [kode])

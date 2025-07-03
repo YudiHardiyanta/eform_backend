@@ -19,7 +19,7 @@ export async function getSampel(req, res) {
         if (roleId.role == 'pengawas') {
             whereClause.pengawas_email = roleId.user_email
         }
-
+        whereClause.kegiatan_id=req.query.id
         if(req.query.status!='all'){
             whereClause.status=req.query.status
         }
@@ -69,6 +69,7 @@ export async function getSampel(req, res) {
                 pengawas_approve : true,
                 wilayah_kecil : true,
                 table_header : true,
+                path : true,
             }
         })
         return res.status(200).json({
@@ -98,6 +99,7 @@ export async function aggSampel(req, res) {
         if (roleId.role == 'pengawas') {
             whereClause.pengawas_email = roleId.user_email
         }
+        whereClause.kegiatan_id=req.query.id
         const agg = await prisma.sampelKegiatan.groupBy({
             where: whereClause,
             by: ['status'],
