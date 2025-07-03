@@ -20,6 +20,7 @@ export async function getKegiatan(req, res) {
                 Kegiatan : true
             }
         })
+        
         return res.status(200).json({
             code : 200, data : kegiatan
         })

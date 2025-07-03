@@ -26,6 +26,16 @@ enum Status {
   approve
 }
 
+enum WilayahKecil {
+  prov
+  kab
+  kec
+  desa
+  sls
+  subsls
+  bs
+}
+
 model MProv {
   id             Int              @id @default(autoincrement())
   kode           String           @unique
@@ -34,6 +44,7 @@ model MProv {
   MKec           MKec[]
   MDesa          MDesa[]
   SampelKegiatan SampelKegiatan[]
+  MSLS           MSLS[]
 
   @@map("m_prov")
 }
@@ -47,6 +58,7 @@ model MKab {
   MKec           MKec[]
   MDesa          MDesa[]
   SampelKegiatan SampelKegiatan[]
+  MSLS           MSLS[]
 
   @@map("m_kab")
 }
@@ -61,6 +73,7 @@ model MKec {
   MKab           MKab?            @relation(fields: [kode_kab], references: [kode])
   MDesa          MDesa[]
   SampelKegiatan SampelKegiatan[]
+  MSLS           MSLS[]
 
   @@map("m_kec")
 }
@@ -77,8 +90,27 @@ model MDesa {
   MProv MProv? @relation(fields: [kode_prov], references: [kode])
   MKab  MKab?  @relation(fields: [kode_kab], references: [kode])
   MKec  MKec?  @relation(fields: [kode_kec], references: [kode])
+  MSLS  MSLS[]
 
   @@map("m_desa")
+}
+
+model MSLS {
+  id             Int              @id @default(autoincrement())
+  kode           String           @unique
+  nama           String
+  kode_prov      String
+  kode_kab       String
+  kode_kec       String
+  kode_desa      String
+  SampelKegiatan SampelKegiatan[]
+
+  MProv MProv? @relation(fields: [kode_prov], references: [kode])
+  MKab  MKab?  @relation(fields: [kode_kab], references: [kode])
+  MKec  MKec?  @relation(fields: [kode_kec], references: [kode])
+  MDesa MDesa? @relation(fields: [kode_desa], references: [kode])
+
+  @@map("m_sls")
 }
 
 model User {
@@ -92,12 +124,18 @@ model User {
 }
 
 model Kegiatan {
-  id          Int        @id @default(autoincrement())
-  nama        String
-  deskripsi   String
-  tgl_mulai   DateTime
-  tgl_selesai DateTime
-  userRoles   UserRole[]
+  id               Int          @id @default(autoincrement())
+  nama             String
+  deskripsi        String
+  pencacah_edit    Boolean      @default(true)
+  pengawas_edit    Boolean      @default(false)
+  pengawas_approve Boolean      @default(true)
+  wilayah_kecil    WilayahKecil @default(subsls)
+  table_header     Json?
+  table_var        Json?
+  tgl_mulai        DateTime
+  tgl_selesai      DateTime
+  userRoles        UserRole[]
 
   @@map("tb_kegiatan")
 }
@@ -134,6 +172,7 @@ model SampelKegiatan {
   MKab            MKab?            @relation(fields: [kab], references: [kode])
   MKec            MKec?            @relation(fields: [kec], references: [kode])
   MDesa           MDesa?           @relation(fields: [desa], references: [kode])
+  MSLS            MSLS?            @relation(fields: [sls], references: [kode])
 
   @@map("tb_sampel_kegiatan")
 }

@@ -26,16 +26,56 @@ export async function getSampel(req, res) {
         const sampel = await prisma.sampelKegiatan.findMany({
             where: whereClause,
             include: {
-                MProv: true,
-                MKab: true,
-                MKec: true,
-                MDesa: true
+                MProv: {
+                    select : {
+                        kode : true,
+                        nama : true
+                    }
+                },
+                MKab: {
+                    select : {
+                        kode : true,
+                        nama : true
+                    }
+                },
+                MKec: {
+                    select : {
+                        kode : true,
+                        nama : true
+                    }
+                },
+                MDesa: {
+                    select : {
+                        kode : true,
+                        nama : true
+                    }
+                },
+                MSLS:{
+                    select : {
+                        kode : true,
+                        nama : true
+                    }
+                },
+            }
+        })
+
+        const kegiatan = await prisma.kegiatan.findUnique({
+            where : {
+                id : parseInt(req.query.id)
+            },
+            select : {
+                pencacah_edit : true,
+                pengawas_edit : true,
+                pengawas_approve : true,
+                wilayah_kecil : true,
+                table_header : true,
             }
         })
         return res.status(200).json({
             code: 200,
             data: sampel,
-            role: roleId.role
+            role: roleId.role,
+            config : kegiatan
         })
     } catch (error) {
         return res.status(500).json({
