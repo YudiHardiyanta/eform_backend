@@ -163,6 +163,7 @@ model SampelKegiatan {
   sls             String?
   subsls          String?
   bs              String?
+  nama            String?
   wilayah_id      String
   kegiatan_id     String
   predifined_data Json?
@@ -186,6 +187,8 @@ model AnswerKegiatan {
   sample_kegiatan_id Int
   is_aktif           Boolean         @default(true)
   SampelKegiatan     SampelKegiatan? @relation(fields: [sample_kegiatan_id], references: [id])
+  createdAt          DateTime?       @default(now())
+  updatedAt          DateTime?       @updatedAt
 
   @@map("tb_answer")
 }
