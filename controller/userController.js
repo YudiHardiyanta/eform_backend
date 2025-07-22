@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { compare,hash } from "bcrypt";
+import { compare, hash } from "bcrypt";
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
@@ -30,6 +30,7 @@ export async function login(req, res) {
         const token = jwt.sign({
             id: user.id,
             username: user.email,
+            role_utama: user.role,
             role: user.userRoles,
             nama: user.nama
         }, SECRET_KEY, { expiresIn: '1d' });
@@ -47,7 +48,7 @@ export async function reset_password(req, res) {
     const { password_lama, password_baru } = req.body;
     console.log(password_lama)
     const user_login = req.user
-    console.log(req.user)
+    //console.log(req.user)
     try {
         const user = await prisma.user.findUnique({
             where: {
@@ -72,12 +73,81 @@ export async function reset_password(req, res) {
                 password: hashedPassword,
             }
         });
-        return res.status(200).json({ code:200,message : 'password sudah berhasil diganti' });
+        return res.status(200).json({ code: 200, message: 'password sudah berhasil diganti' });
 
     } catch (error) {
         console.log(error)
         return res.status(500).json({
             code: 500, message: error.message
         })
+    }
+}
+
+export async function get(req, res) {
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                email: req.query['username']
+            },
+            select : {
+                nama : true,
+                email : true,
+                role : true,
+                satker : true,
+                userRoles: true,
+            },
+        })
+        return res.status(200).json({
+            code: 200, data: user
+        })
+    } catch (error) {
+        //get keseluruhan
+        console.log(error)
+        try {
+            const user_login = req.user
+            const user = await prisma.user.findUnique({
+                where: {
+                    email: user_login.username
+                },
+                include: {
+                    userRoles: true,
+                },
+            })
+            if (user.satker == '5100') {
+                //get semua
+                const userGet = await prisma.user.findMany({
+                    select: {
+                        nama: true,
+                        email: true,
+                        satker: true,
+                        role: true
+                    }
+                })
+                return res.status(200).json({
+                    code: 200, data: userGet
+                })
+            } else {
+                const userGet = await prisma.user.findMany({
+                    where: {
+                        satker: user.satker
+                    },
+                    select: {
+                        nama: true,
+                        email: true,
+                        satker: true,
+                        role: true
+                    }
+                })
+                return res.status(200).json({
+                    code: 200, data: userGet
+                })
+
+            }
+        } catch (error) {
+            return res.status(500).json({
+                code: 500, message: error.message
+            })
+        }
+
     }
 }

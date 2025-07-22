@@ -17,6 +17,7 @@ enum Role {
   admin
   pengawas
   pencacah
+  user
 }
 
 enum Status {
@@ -120,6 +121,8 @@ model User {
   email     String     @unique
   password  String
   userRoles UserRole[]
+  satker    String?
+  role      Role       @default(user)
 
   @@map("tb_users")
 }
