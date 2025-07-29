@@ -50,7 +50,8 @@ export async function saveById(req, res) {
             data: {
                 sample_kegiatan_id: parseInt(id_sampel),
                 answer: data,
-                is_aktif: true
+                is_aktif: true,
+                createdBy :req.user.username
             }
         })
 

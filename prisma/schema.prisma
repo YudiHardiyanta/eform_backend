@@ -192,6 +192,7 @@ model AnswerKegiatan {
   SampelKegiatan     SampelKegiatan? @relation(fields: [sample_kegiatan_id], references: [id])
   createdAt          DateTime?       @default(now())
   updatedAt          DateTime?       @updatedAt
+  createdBy          String?
 
   @@map("tb_answer")
 }

@@ -46,7 +46,6 @@ export async function login(req, res) {
 
 export async function reset_password(req, res) {
     const { password_lama, password_baru } = req.body;
-    console.log(password_lama)
     const user_login = req.user
     //console.log(req.user)
     try {
@@ -89,11 +88,11 @@ export async function get(req, res) {
             where: {
                 email: req.query['username']
             },
-            select : {
-                nama : true,
-                email : true,
-                role : true,
-                satker : true,
+            select: {
+                nama: true,
+                email: true,
+                role: true,
+                satker: true,
                 userRoles: true,
             },
         })
@@ -149,5 +148,24 @@ export async function get(req, res) {
             })
         }
 
+    }
+}
+
+export async function edit(req, res) {
+    //const { password_lama, password_baru } = req.body;
+    
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                email: user_login.username
+            },
+            include: {
+                userRoles: true,
+            },
+        })
+    } catch (error) {
+        return res.status(500).json({
+            code: 500, message: error.message
+        })
     }
 }
