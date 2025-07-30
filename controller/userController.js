@@ -74,22 +74,22 @@ export async function reset_password(req, res) {
         return res.status(200).json({ code: 200, message: 'password sudah berhasil diganti' });
 
     } catch (error) {
-        
+
         return res.status(500).json({
             code: 500, message: error.message
         })
     }
 }
 
-export async function reset_password_admin(req,res) {
+export async function reset_password_admin(req, res) {
     try {
         const { email, reset_pass } = req.body;
         const hashedPassword = await hash(reset_pass, 10);
         const user = await prisma.user.update({
-            where : {
+            where: {
                 email: email
             },
-            data : {
+            data: {
                 password: hashedPassword,
             }
         })
@@ -104,33 +104,9 @@ export async function reset_password_admin(req,res) {
 
 export async function get(req, res) {
     try {
-        const user = await prisma.user.findUnique({
-            where: {
-                email: req.query['username']
-            },
-            select: {
-                nama: true,
-                email: true,
-                role: true,
-                satker: true,
-                userRoles: {
-                    include: {
-                        Kegiatan: {
-                            select: {
-                                nama: true
-                            }
-                        },
-                    },
-                }
-            },
-        })
-        return res.status(200).json({
-            code: 200, data: user
-        })
-    } catch (error) {
-        //get keseluruhan
-        try {
-            const user_login = req.user
+        const user_login = req.user
+        console.log(user_login)
+        if (user_login.role_utama == 'admin' && !req.query['username']) {
             const user = await prisma.user.findUnique({
                 where: {
                     email: user_login.username
@@ -169,11 +145,39 @@ export async function get(req, res) {
                 })
 
             }
-        } catch (error) {
-            return res.status(500).json({
-                code: 500, message: error.message
+        } else {
+            const user = await prisma.user.findUnique({
+                where: {
+                    email: req.query['username']
+                },
+                select: {
+                    nama: true,
+                    email: true,
+                    role: true,
+                    satker: true,
+                    userRoles: {
+                        include: {
+                            Kegiatan: {
+                                select: {
+                                    nama: true
+                                }
+                            },
+                        },
+                    }
+                },
+            })
+            return res.status(200).json({
+                code: 200, data: user
             })
         }
+
+    } catch (error) {
+        //get keseluruhan
+
+        return res.status(500).json({
+            code: 500, message: error.message
+        })
+
 
     }
 }
@@ -193,16 +197,16 @@ export async function edit(req, res) {
         //loop user roles
         await Promise.all(item_roles.map(role =>
             prisma.userRole.update({
-                where : {
-                    id : role.id
+                where: {
+                    id: role.id
                 },
-                data : {
-                    role : role.role
+                data: {
+                    role: role.role
                 }
             })
         ))
 
-        return res.status(200).json({ code: 200, message: 'user an '+nama_user+' telah diubah' });
+        return res.status(200).json({ code: 200, message: 'user an ' + nama_user + ' telah diubah' });
     } catch (error) {
         return res.status(500).json({
             code: 500, message: error.message
