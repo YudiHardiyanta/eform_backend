@@ -14,7 +14,6 @@ const isAdmin = (req, res, next) => {
     try {
         const verified = jwt.verify(token, SECRET_KEY);
         req.user = verified; // Menyimpan informasi user yang terverifikasi
-        console.log(req.user.role_utama)
         if(req.user.role_utama!='admin'){
             return res.status(403).json({ message: 'Access denied' });
         }

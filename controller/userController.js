@@ -105,7 +105,6 @@ export async function reset_password_admin(req, res) {
 export async function get(req, res) {
     try {
         const user_login = req.user
-        console.log(user_login)
         if (user_login.role_utama == 'admin' && !req.query['username']) {
             const user = await prisma.user.findUnique({
                 where: {
@@ -115,6 +114,52 @@ export async function get(req, res) {
                     userRoles: true,
                 },
             })
+            if (req.query['kegiatan_id']) {
+                const whereClause = {}
+                whereClause.kegiatan_id = parseInt(req.query['kegiatan_id'])
+                if (req.query['role']) {
+                    whereClause.role = req.query['role']
+                }
+                if (user.satker != '5100') {
+                    whereClause.User={}
+                    whereClause.User.satker = user['satker']
+                }
+                if (user.satker != '5100') {
+                    const userGet = await prisma.userRole.findMany({
+                        include: {
+                            User: {
+                                select: {
+                                    nama: true,
+                                    email: true,
+                                },
+                                
+                            }
+                        },
+                        where: whereClause
+                    })
+                    return res.status(200).json({
+                        code: 200, data: userGet
+                    })
+                } else {
+                    const userGet = await prisma.userRole.findMany({
+                        include: {
+                            User: {
+                                select: {
+                                    nama: true,
+                                    email: true,
+                                },
+                            }
+                        },
+                        where: whereClause
+                    })
+                    return res.status(200).json({
+                        code: 200, data: userGet
+                    })
+
+                }
+
+
+            }
             if (user.satker == '5100') {
                 //get semua
                 const userGet = await prisma.user.findMany({

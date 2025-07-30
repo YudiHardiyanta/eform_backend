@@ -20,7 +20,6 @@ export async function saveById(req, res) {
             }
         })
         if (!sampel) {
-            console.log(sampel)
             return res.status(401).json({ code: 401, message: 'Anda tidak memiliki akses untuk pendataan ini' });
         }
         if (sampel.pencacah_email != req.user.username && sampel.pengawas_email != req.user.username) {
