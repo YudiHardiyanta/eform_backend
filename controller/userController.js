@@ -47,7 +47,6 @@ export async function login(req, res) {
 export async function reset_password(req, res) {
     const { password_lama, password_baru } = req.body;
     const user_login = req.user
-    //console.log(req.user)
     try {
         const user = await prisma.user.findUnique({
             where: {
@@ -75,7 +74,28 @@ export async function reset_password(req, res) {
         return res.status(200).json({ code: 200, message: 'password sudah berhasil diganti' });
 
     } catch (error) {
-        console.log(error)
+        
+        return res.status(500).json({
+            code: 500, message: error.message
+        })
+    }
+}
+
+export async function reset_password_admin(req,res) {
+    try {
+        const { email, reset_pass } = req.body;
+        const hashedPassword = await hash(reset_pass, 10);
+        const user = await prisma.user.update({
+            where : {
+                email: email
+            },
+            data : {
+                password: hashedPassword,
+            }
+        })
+
+        return res.status(200).json({ code: 200, message: 'password sudah berhasil diganti' });
+    } catch (error) {
         return res.status(500).json({
             code: 500, message: error.message
         })
@@ -93,7 +113,15 @@ export async function get(req, res) {
                 email: true,
                 role: true,
                 satker: true,
-                userRoles: true,
+                userRoles: {
+                    include: {
+                        Kegiatan: {
+                            select: {
+                                nama: true
+                            }
+                        },
+                    },
+                }
             },
         })
         return res.status(200).json({
@@ -101,7 +129,6 @@ export async function get(req, res) {
         })
     } catch (error) {
         //get keseluruhan
-        console.log(error)
         try {
             const user_login = req.user
             const user = await prisma.user.findUnique({
@@ -152,17 +179,30 @@ export async function get(req, res) {
 }
 
 export async function edit(req, res) {
-    //const { password_lama, password_baru } = req.body;
-    
+    const { email_user, nama_user, role_user, item_roles } = req.body;
     try {
-        const user = await prisma.user.findUnique({
+        const user = await prisma.user.update({
             where: {
-                email: user_login.username
+                email: email_user
             },
-            include: {
-                userRoles: true,
+            data: {
+                nama: nama_user,
+                role: role_user
             },
         })
+        //loop user roles
+        await Promise.all(item_roles.map(role =>
+            prisma.userRole.update({
+                where : {
+                    id : role.id
+                },
+                data : {
+                    role : role.role
+                }
+            })
+        ))
+
+        return res.status(200).json({ code: 200, message: 'user an '+nama_user+' telah diubah' });
     } catch (error) {
         return res.status(500).json({
             code: 500, message: error.message
