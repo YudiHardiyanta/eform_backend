@@ -36,6 +36,17 @@ export async function login(req, res) {
             nama: user.nama
         }, SECRET_KEY, { expiresIn: '1d' });
 
+        const now = new Date();
+         
+        const user_update = await prisma.user.update({
+            where: {
+                email: username
+            },
+            data : {
+                lastLogin : now.toISOString()
+            }
+        })
+
         return res.status(200).json({ token });
 
     } catch (error) {
