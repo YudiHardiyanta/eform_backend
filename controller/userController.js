@@ -31,6 +31,7 @@ export async function login(req, res) {
             id: user.id,
             username: user.email,
             role_utama: user.role,
+            satker : user.satker,
             role: user.userRoles,
             nama: user.nama
         }, SECRET_KEY, { expiresIn: '1d' });

@@ -23,6 +23,10 @@ export async function getSampel(req, res) {
         if (req.query.status != 'all') {
             whereClause.status = req.query.status
         }
+        //console.log(req.user)
+        if (req.user.role_utama =='admin' && req.user.satker!="5100"){
+            whereClause.kab = req.user.satker
+        }
         const sampel = await prisma.sampelKegiatan.findMany({
             where: whereClause,
             include: {
@@ -98,6 +102,9 @@ export async function aggSampel(req, res) {
         }
         if (roleId.role == 'pengawas') {
             whereClause.pengawas_email = roleId.user_email
+        }
+        if (req.user.role_utama =='admin' && req.user.satker!="5100"){
+            whereClause.kab = req.user.satker
         }
         whereClause.kegiatan_id = req.query.id
         const agg = await prisma.sampelKegiatan.groupBy({

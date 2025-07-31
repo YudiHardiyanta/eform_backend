@@ -122,6 +122,7 @@ model User {
   password  String
   userRoles UserRole[]
   satker    String?
+  lastLogin DateTime?
   role      Role       @default(user)
 
   @@map("tb_users")
