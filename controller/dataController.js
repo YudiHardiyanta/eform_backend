@@ -50,7 +50,7 @@ export async function saveById(req, res) {
                 sample_kegiatan_id: parseInt(id_sampel),
                 answer: data,
                 is_aktif: true,
-                createdBy :req.user.username
+                createdBy: req.user.username
             }
         })
 
@@ -162,9 +162,9 @@ export async function getDataById(req, res) {
                     }
                 },
                 MSLS: {
-                    select : {
-                        kode : true,
-                        nama : true,
+                    select: {
+                        kode: true,
+                        nama: true,
                     }
                 },
                 answerKegiatan: {
@@ -189,6 +189,170 @@ export async function getDataById(req, res) {
             role: roleId.role
         })
 
+    } catch (error) {
+        return res.status(500).json({
+            code: 500, message: error.message
+        })
+    }
+}
+
+export async function getDataByIdCawi(req, res) {
+    try {
+        const id_sampel = req.query.id
+        if (!req.query.token) {
+            res.status(401).json({ code: 401, message: 'Anda tidak memiliki akses untuk pendataan ini' });
+        }
+        if (req.query.token) {
+            const token = req.query.token
+            const sampel = await prisma.sampelKegiatan.findUnique({
+                where: {
+                    id: parseInt(id_sampel),
+                    token: token
+                },
+                include: {
+                    MProv: {
+                        select: {
+                            kode: true,
+                            nama: true
+                        }
+                    },
+                    MKab: {
+                        select: {
+                            kode: true,
+                            nama: true
+                        }
+                    },
+                    MKec: {
+                        select: {
+                            kode: true,
+                            nama: true
+                        }
+                    },
+                    MDesa: {
+                        select: {
+                            kode: true,
+                            nama: true
+                        }
+                    },
+                    MSLS: {
+                        select: {
+                            kode: true,
+                            nama: true,
+                        }
+                    },
+                    answerKegiatan: {
+                        where: {
+                            is_aktif: true
+                        }
+                    }
+                }
+            })
+            if (!sampel) {
+                res.status(401).json({ code: 401, message: 'Anda tidak memiliki akses untuk pendataan ini' });
+            }
+            return res.status(200).json({
+                code: 200,
+                data: sampel,
+            })
+        }
+    } catch (error) {
+        return res.status(500).json({
+            code: 500, message: error.message
+        })
+    }
+
+}
+
+export async function saveByIdCawi(req, res) {
+    try {
+        const id_sampel = req.body.id
+        const status = req.body.status
+        const data = req.body.data
+        const catatan = req.body.catatan
+        if (!req.body.token) {
+            res.status(401).json({ code: 401, message: 'Anda tidak memiliki akses untuk pendataan ini' });
+        }
+        if (req.body.token) {
+            const token = req.query.token
+            const sampel = await prisma.sampelKegiatan.findUnique({
+                where: {
+                    id: parseInt(id_sampel),
+                    token: token
+                },
+                include: {
+                    MProv: {
+                        select: {
+                            kode: true,
+                            nama: true
+                        }
+                    },
+                    MKab: {
+                        select: {
+                            kode: true,
+                            nama: true
+                        }
+                    },
+                    MKec: {
+                        select: {
+                            kode: true,
+                            nama: true
+                        }
+                    },
+                    MDesa: {
+                        select: {
+                            kode: true,
+                            nama: true
+                        }
+                    },
+                    MSLS: {
+                        select: {
+                            kode: true,
+                            nama: true,
+                        }
+                    },
+                    answerKegiatan: {
+                        where: {
+                            is_aktif: true
+                        }
+                    }
+                }
+            })
+            if (!sampel) {
+                res.status(401).json({ code: 401, message: 'Anda tidak memiliki akses untuk pendataan ini' });
+            }
+            const updated_sampel = await prisma.sampelKegiatan.update({
+                where: {
+                    id: parseInt(id_sampel)
+                },
+                data: {
+                    status: status,
+                    catatan: catatan
+                }
+            });
+
+            const updateAnswer = await prisma.answerKegiatan.updateMany({
+                where: {
+                    sample_kegiatan_id: parseInt(id_sampel)
+                },
+                data: {
+                    is_aktif: false
+                }
+            });
+
+            const addNewAnswer = await prisma.answerKegiatan.create({
+                data: {
+                    sample_kegiatan_id: parseInt(id_sampel),
+                    answer: data,
+                    is_aktif: true,
+                    //createdBy: req.user.username
+                }
+            })
+
+            return res.status(200).json({
+                code: 200,
+                message: `Data sudah terupdate`
+            })
+        }
     } catch (error) {
         return res.status(500).json({
             code: 500, message: error.message

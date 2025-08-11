@@ -28,6 +28,11 @@ enum Status {
   approve
 }
 
+enum moda {
+  cawi
+  capi
+}
+
 enum WilayahKecil {
   prov
   kab
@@ -173,6 +178,8 @@ model SampelKegiatan {
   predifined_data Json?
   pencacah_email  String?
   pengawas_email  String?
+  moda_utama      moda?            @default(capi)
+  token           String?          @db.Text
   status          Status           @default(open)
   catatan         String?          @db.Text
   answerKegiatan  AnswerKegiatan[]
@@ -207,4 +214,30 @@ model Notification {
   is_open     Boolean @default(false)
 
   @@map("tb_notif")
+}
+
+model ListUsaha {
+  id      Int     @id @default(autoincrement())
+  nama    String
+  email   String
+  telepon String?
+  @@map("m_list_usaha")
+}
+
+model EmailHistory {
+  id                 Int       @id @default(autoincrement())
+  sample_kegiatan_id Int
+  to                 String
+  status             Boolean
+  createdAt          DateTime? @default(now())
+  updatedAt          DateTime? @updatedAt
+  @@map("t_email_history")
+}
+
+model EmailFormat {
+  id          Int    @id @default(autoincrement())
+  kegiatan_id Int
+  body_html   String
+  attachments Json?
+  @@map("m_email_format")
 }
