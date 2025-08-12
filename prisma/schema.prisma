@@ -146,6 +146,7 @@ model Kegiatan {
   tgl_mulai        DateTime
   tgl_selesai      DateTime
   path             String?
+  path_cawi        String?
   color            String?
   userRoles        UserRole[]
 
@@ -221,6 +222,7 @@ model ListUsaha {
   nama    String
   email   String
   telepon String?
+
   @@map("m_list_usaha")
 }
 
@@ -231,13 +233,15 @@ model EmailHistory {
   status             Boolean
   createdAt          DateTime? @default(now())
   updatedAt          DateTime? @updatedAt
+
   @@map("t_email_history")
 }
 
 model EmailFormat {
-  id          Int    @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   kegiatan_id Int
-  body_html   String
+  body_html   String? @db.Text()
   attachments Json?
+
   @@map("m_email_format")
 }
