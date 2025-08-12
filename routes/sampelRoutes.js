@@ -1,5 +1,6 @@
 import express from 'express';
 import { getSampel,aggSampel,editSampel } from '../controller/sampelController.js';
+import { kirimEmail } from '../controller/emailController.js';
 import verifyToken from '../middleware/authMiddleware.js';
 import isAdmin from '../middleware/roleMiddleware.js';
 
@@ -10,5 +11,6 @@ sampelRoutes.get('/agg',verifyToken,aggSampel)
 
 // untuk admin
 sampelRoutes.put('/',verifyToken,isAdmin,editSampel)
+sampelRoutes.post('/email',verifyToken,isAdmin,kirimEmail)
 
 export default sampelRoutes
