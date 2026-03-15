@@ -45,7 +45,7 @@ enum WilayahKecil {
 
 model MProv {
   id             Int              @id @default(autoincrement())
-  kode           String           @unique
+  kode           String
   nama           String
   versi          String?
   Kab            MKab[]
@@ -54,46 +54,46 @@ model MProv {
   SampelKegiatan SampelKegiatan[]
   MSLS           MSLS[]
 
-  @@map("m_prov")
   @@unique([kode, versi])
+  @@map("m_prov")
 }
 
 model MKab {
   id             Int              @id @default(autoincrement())
-  kode           String           @unique
+  kode           String
   nama           String
   kode_prov      String
   versi          String?
-  MProv          MProv?           @relation(fields: [kode_prov,versi], references: [kode,versi])
+  MProv          MProv?           @relation(fields: [kode_prov, versi], references: [kode, versi])
   MKec           MKec[]
   MDesa          MDesa[]
   SampelKegiatan SampelKegiatan[]
   MSLS           MSLS[]
 
-  @@map("m_kab")
   @@unique([kode, versi])
+  @@map("m_kab")
 }
 
 model MKec {
   id             Int              @id @default(autoincrement())
-  kode           String           @unique
+  kode           String
   nama           String
   kode_prov      String
   kode_kab       String
   versi          String?
-  MProv          MProv?           @relation(fields: [kode_prov,versi], references: [kode,versi])
-  MKab           MKab?            @relation(fields: [kode_kab,versi], references: [kode,versi])
+  MProv          MProv?           @relation(fields: [kode_prov, versi], references: [kode, versi])
+  MKab           MKab?            @relation(fields: [kode_kab, versi], references: [kode, versi])
   MDesa          MDesa[]
   SampelKegiatan SampelKegiatan[]
   MSLS           MSLS[]
 
-  @@map("m_kec")
   @@unique([kode, versi])
+  @@map("m_kec")
 }
 
 model MDesa {
   id             Int              @id @default(autoincrement())
-  kode           String           @unique
+  kode           String
   nama           String
   kode_prov      String
   kode_kab       String
@@ -101,18 +101,18 @@ model MDesa {
   versi          String?
   SampelKegiatan SampelKegiatan[]
 
-  MProv MProv? @relation(fields: [kode_prov,versi], references: [kode,versi])
-  MKab  MKab?  @relation(fields: [kode_kab,versi], references: [kode,versi])
-  MKec  MKec?  @relation(fields: [kode_kec,versi], references: [kode,versi])
+  MProv MProv? @relation(fields: [kode_prov, versi], references: [kode, versi])
+  MKab  MKab?  @relation(fields: [kode_kab, versi], references: [kode, versi])
+  MKec  MKec?  @relation(fields: [kode_kec, versi], references: [kode, versi])
   MSLS  MSLS[]
 
-  @@map("m_desa")
   @@unique([kode, versi])
+  @@map("m_desa")
 }
 
 model MSLS {
   id             Int              @id @default(autoincrement())
-  kode           String           @unique
+  kode           String
   nama           String
   kode_prov      String
   kode_kab       String
@@ -121,13 +121,13 @@ model MSLS {
   versi          String?
   SampelKegiatan SampelKegiatan[]
 
-  MProv MProv? @relation(fields: [kode_prov,versi], references: [kode,versi])
-  MKab  MKab?  @relation(fields: [kode_kab,versi], references: [kode,versi])
-  MKec  MKec?  @relation(fields: [kode_kec,versi], references: [kode,versi])
-  MDesa MDesa? @relation(fields: [kode_desa,versi], references: [kode,versi])
+  MProv MProv? @relation(fields: [kode_prov, versi], references: [kode, versi])
+  MKab  MKab?  @relation(fields: [kode_kab, versi], references: [kode, versi])
+  MKec  MKec?  @relation(fields: [kode_kec, versi], references: [kode, versi])
+  MDesa MDesa? @relation(fields: [kode_desa, versi], references: [kode, versi])
 
-  @@map("m_sls")
   @@unique([kode, versi])
+  @@map("m_sls")
 }
 
 model User {
@@ -194,11 +194,13 @@ model SampelKegiatan {
   status          Status           @default(open)
   catatan         String?          @db.Text
   answerKegiatan  AnswerKegiatan[]
-  MProv           MProv?           @relation(fields: [prov], references: [kode])
-  MKab            MKab?            @relation(fields: [kab], references: [kode])
-  MKec            MKec?            @relation(fields: [kec], references: [kode])
-  MDesa           MDesa?           @relation(fields: [desa], references: [kode])
-  MSLS            MSLS?            @relation(fields: [sls], references: [kode])
+  versi           String?
+  MProv           MProv?           @relation(fields: [prov,versi], references: [kode,versi])
+  MKab            MKab?            @relation(fields: [kab,versi], references: [kode,versi])
+  MKec            MKec?            @relation(fields: [kec,versi], references: [kode,versi])
+  MDesa           MDesa?           @relation(fields: [desa,versi], references: [kode,versi])
+  MSLS            MSLS?            @relation(fields: [sls,versi], references: [kode,versi])
+  
 
   @@map("tb_sampel_kegiatan")
 }
