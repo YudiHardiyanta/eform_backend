@@ -250,3 +250,14 @@ model EmailFormat {
 
   @@map("m_email_format")
 }
+
+model KBLI {
+  id              Int     @id @default(autoincrement())
+  kbli_kode       String
+  kbli_kategori   String
+  kbli_deskripsi  String
+  kbli_keterangan String  @db.Text()
+  versi           String?
+
+  @@map("m_kbli")
+}

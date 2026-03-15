@@ -9,6 +9,7 @@ import kegiatanRoutes from './routes/kegiatanRoutes.js';
 import sampelRoutes from './routes/sampelRoutes.js';
 import dataRoutes from './routes/dataRoutes.js';
 import mwilRoutes from './routes/mwilRoutes.js';
+import klasifikasiRoutes from './routes/klasifikasiRoutes.js';
 dotenv.config();  // Memuat variabel lingkungan dari file .env
 
 const app = express();
@@ -23,6 +24,7 @@ app.use('/kegiatan',kegiatanRoutes);
 app.use('/sampel',sampelRoutes);
 app.use('/data',dataRoutes);
 app.use('/mwil',mwilRoutes);
+app.use('/klasifikasi',klasifikasiRoutes);
 
 // Dummy users untuk login (gunakan database sebenarnya untuk produksi)
 const users = [
