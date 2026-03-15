@@ -55,6 +55,7 @@ model MProv {
   MSLS           MSLS[]
 
   @@map("m_prov")
+  @@unique([kode, versi])
 }
 
 model MKab {
@@ -63,13 +64,14 @@ model MKab {
   nama           String
   kode_prov      String
   versi          String?
-  MProv          MProv?           @relation(fields: [kode_prov], references: [kode])
+  MProv          MProv?           @relation(fields: [kode_prov,versi], references: [kode,versi])
   MKec           MKec[]
   MDesa          MDesa[]
   SampelKegiatan SampelKegiatan[]
   MSLS           MSLS[]
 
   @@map("m_kab")
+  @@unique([kode, versi])
 }
 
 model MKec {
@@ -79,13 +81,14 @@ model MKec {
   kode_prov      String
   kode_kab       String
   versi          String?
-  MProv          MProv?           @relation(fields: [kode_prov], references: [kode])
-  MKab           MKab?            @relation(fields: [kode_kab], references: [kode])
+  MProv          MProv?           @relation(fields: [kode_prov,versi], references: [kode,versi])
+  MKab           MKab?            @relation(fields: [kode_kab,versi], references: [kode,versi])
   MDesa          MDesa[]
   SampelKegiatan SampelKegiatan[]
   MSLS           MSLS[]
 
   @@map("m_kec")
+  @@unique([kode, versi])
 }
 
 model MDesa {
@@ -98,12 +101,13 @@ model MDesa {
   versi          String?
   SampelKegiatan SampelKegiatan[]
 
-  MProv MProv? @relation(fields: [kode_prov], references: [kode])
-  MKab  MKab?  @relation(fields: [kode_kab], references: [kode])
-  MKec  MKec?  @relation(fields: [kode_kec], references: [kode])
+  MProv MProv? @relation(fields: [kode_prov,versi], references: [kode,versi])
+  MKab  MKab?  @relation(fields: [kode_kab,versi], references: [kode,versi])
+  MKec  MKec?  @relation(fields: [kode_kec,versi], references: [kode,versi])
   MSLS  MSLS[]
 
   @@map("m_desa")
+  @@unique([kode, versi])
 }
 
 model MSLS {
@@ -117,12 +121,13 @@ model MSLS {
   versi          String?
   SampelKegiatan SampelKegiatan[]
 
-  MProv MProv? @relation(fields: [kode_prov], references: [kode])
-  MKab  MKab?  @relation(fields: [kode_kab], references: [kode])
-  MKec  MKec?  @relation(fields: [kode_kec], references: [kode])
-  MDesa MDesa? @relation(fields: [kode_desa], references: [kode])
+  MProv MProv? @relation(fields: [kode_prov,versi], references: [kode,versi])
+  MKab  MKab?  @relation(fields: [kode_kab,versi], references: [kode,versi])
+  MKec  MKec?  @relation(fields: [kode_kec,versi], references: [kode,versi])
+  MDesa MDesa? @relation(fields: [kode_desa,versi], references: [kode,versi])
 
   @@map("m_sls")
+  @@unique([kode, versi])
 }
 
 model User {
