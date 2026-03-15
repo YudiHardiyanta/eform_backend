@@ -47,6 +47,7 @@ model MProv {
   id             Int              @id @default(autoincrement())
   kode           String           @unique
   nama           String
+  versi          String?
   Kab            MKab[]
   MKec           MKec[]
   MDesa          MDesa[]
@@ -61,6 +62,7 @@ model MKab {
   kode           String           @unique
   nama           String
   kode_prov      String
+  versi          String?
   MProv          MProv?           @relation(fields: [kode_prov], references: [kode])
   MKec           MKec[]
   MDesa          MDesa[]
@@ -76,6 +78,7 @@ model MKec {
   nama           String
   kode_prov      String
   kode_kab       String
+  versi          String?
   MProv          MProv?           @relation(fields: [kode_prov], references: [kode])
   MKab           MKab?            @relation(fields: [kode_kab], references: [kode])
   MDesa          MDesa[]
@@ -92,6 +95,7 @@ model MDesa {
   kode_prov      String
   kode_kab       String
   kode_kec       String
+  versi          String?
   SampelKegiatan SampelKegiatan[]
 
   MProv MProv? @relation(fields: [kode_prov], references: [kode])
@@ -110,6 +114,7 @@ model MSLS {
   kode_kab       String
   kode_kec       String
   kode_desa      String
+  versi          String?
   SampelKegiatan SampelKegiatan[]
 
   MProv MProv? @relation(fields: [kode_prov], references: [kode])
