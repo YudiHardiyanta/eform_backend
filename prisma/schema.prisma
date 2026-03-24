@@ -195,6 +195,7 @@ model SampelKegiatan {
   catatan         String?          @db.Text
   answerKegiatan  AnswerKegiatan[]
   versi           String?
+  email           String?
   MProv           MProv?           @relation(fields: [prov,versi], references: [kode,versi])
   MKab            MKab?            @relation(fields: [kab,versi], references: [kode,versi])
   MKec            MKec?            @relation(fields: [kec,versi], references: [kode,versi])

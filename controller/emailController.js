@@ -14,14 +14,13 @@ const transporter = nodemailer.createTransport({
     port: 587,                  // atau 465 untuk SSL
     secure: false,              // true jika port 465
     auth: {
-        user: 'kasiedls5100@bps.go.id',
-        pass: 'dls5100'
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     },
     tls: {
         rejectUnauthorized: false // gunakan jika self-signed cert
     }
 });
-
 
 
 export async function kirimEmail(req, res) {
@@ -37,7 +36,8 @@ export async function kirimEmail(req, res) {
                     id: id_sampel
                 },
                 data: {
-                    token: token
+                    token: token,
+                    email: email,
                 }
             })
         }
@@ -116,15 +116,3 @@ export async function kirimEmail(req, res) {
         })
     }
 }
-
-
-/*
-try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Email terkirim:', info.response);
-} catch (err) {
-    console.error('❌ Gagal kirim email:', err);
-}
-// Jalankan fungsi kirim email saat file dieksekusi langsung
-console.log('tes')
-*/
